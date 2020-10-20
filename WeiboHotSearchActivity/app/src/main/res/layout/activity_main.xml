@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/insert_rank"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Rank" />
+
+    <EditText
+        android:id="@+id/insert_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Title" />
+
+    <EditText
+        android:id="@+id/insert_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="View" />
+
+    <Button
+        android:id="@+id/submit_insert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit" />
+
+    <EditText
+        android:id="@+id/update_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Update id" />
+
+    <EditText
+        android:id="@+id/update_rank"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="New rank" />
+
+    <EditText
+        android:id="@+id/update_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="New title" />
+
+    <EditText
+        android:id="@+id/update_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="New view" />
+
+    <Button
+        android:id="@+id/submit_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit" />
+
+    <EditText
+        android:id="@+id/delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Delete" />
+
+    <Button
+        android:id="@+id/submit_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit" />
+
+    <Button
+        android:id="@+id/send_request"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send Request" />
+
+</LinearLayout>
