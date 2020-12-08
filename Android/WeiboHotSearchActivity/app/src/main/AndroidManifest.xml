@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.weibohotsearchactivity">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".activity.TermsActivity"/>
+        <activity android:name=".activity.TenLineChartActivity" />
+        <activity
+            android:name=".activity.MarkerViewActivity"
+            tools:ignore="Instantiatable" />
+        <activity android:name=".activity.LineChartActivity" />
+        <activity
+            android:name=".activity.ScatterChartActivity"
+            android:label="@string/scatterChart" />
+        <activity
+            android:name=".activity.BarChartActivity"
+            android:label="@string/barChart" />
+        <activity
+            android:name=".activity.PieChartActivity"
+            android:label="@string/pieChart" />
+        <activity
+            android:name=".activity.SelectActivity"
+            android:label="@string/select" />
+        <activity
+            android:name=".activity.DeleteActivity"
+            android:label="@string/delete" />
+        <activity
+            android:name=".activity.UpdateActivity"
+            android:label="@string/update" />
+        <activity
+            android:name=".activity.InsertActivity"
+            android:label="@string/insert" />
+        <activity
+            android:name=".activity.ListViewActivity"
+            android:label="@string/listView" />
+        <activity android:name=".activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

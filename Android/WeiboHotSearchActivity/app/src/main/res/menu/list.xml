@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/item_insert"
+        android:title="Insert" />
+    <item
+        android:id="@+id/item_update"
+        android:title="Update" />
+    <item
+        android:id="@+id/item_delete"
+        android:title="Delete" />
+    <item
+        android:id="@+id/item_return"
+        android:icon="@drawable/ic_return"
+        android:title="Return"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/item_select"
+        android:title="Select" />
+    <item
+        android:id="@+id/delete_search"
+        android:icon="@drawable/ic_delete"
+        android:title="Delete Search"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/pie_chart"
+        android:title="Pie Chart" />
+    <item
+        android:id="@+id/bar_chart"
+        android:title="Bar Chart" />
+    <item
+        android:id="@+id/scatter_chart"
+        android:title="Scatter Chart" />
+
+</menu>

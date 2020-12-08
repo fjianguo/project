@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">微博热搜榜</string>
+    <string name="insert">添加热搜</string>
+    <string name="select">标题查询</string>
+    <string name="update">修改热搜</string>
+    <string name="delete">删除热搜</string>
+    <string name="listView">全部热搜</string>
+    <string name="barChart">柱形图</string>
+    <string name="scatterChart">散点图</string>
+    <string name="pieChart">饼图</string>
+</resources>

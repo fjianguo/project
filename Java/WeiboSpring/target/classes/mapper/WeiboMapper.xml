@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jianguo.dao.WeiboDao">
+    <resultMap id="BaseResultMap" type="com.jianguo.domain.Weibo">
+        <result column="s_id" property="id"/>
+        <result column="s_rank" property="rank"/>
+        <result column="s_title" property="title"/>
+        <result column="s_view" property="view"/>
+        <result column="s_time" property="time"/>
+        <result column="id" property="id"/>
+        <result column="term" property="term"/>
+        <result column="number" property="number"/>
+    </resultMap>
+
+    <resultMap id="Terms" type="com.jianguo.domain.Terms">
+        <result column="id" property="id"/>
+        <result column="term" property="term"/>
+        <result column="number" property="number"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        s_id, s_rank, s_title, s_view, s_time
+    </sql>
+
+    <sql id="Base_Column_List_Terms">
+        id, term, number
+    </sql>
+
+    <select id="findByTitle" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from search
+        where s_title = #{title}
+    </select>
+
+    <select id="findAllSearch" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from search
+    </select>
+
+    <select id="findAll" resultMap="Terms">
+        select
+        <include refid="Base_Column_List_Terms"/>
+        from terms
+    </select>
+
+    <select id="findRankSearch" resultMap="BaseResultMap">
+        select
+        s_rank,s_view,s_title
+        from (select rank() over(order by s_view desc)
+        as s_rank,s_view,s_title from (select sum(s_view)
+        as s_view ,s_title
+        as  s_title from search group by s_title)
+        as t1)
+        as t2
+    </select>
+
+    <select id="findWeiboByTitle" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from search
+        where s_title like #{title}
+    </select>
+
+    <insert id="saveWeibo" parameterType="Weibo" useGeneratedKeys="true" keyProperty="id">
+        insert into
+        search(s_rank,s_title,s_view,s_time)
+        values
+        (#{rank},#{title},#{view},#{time})
+    </insert>
+
+    <update id="updateWeibo" parameterType="Weibo">
+        update
+        search
+        set
+        s_rank = #{rank},
+        s_title = #{title},
+        s_view = #{view}
+        s_time = #{time}
+        where
+        s_id = #{id}
+    </update>
+
+    <delete id="deleteWeibo" parameterType="java.lang.Long">
+        delete from
+        search
+        where
+        s_id = #{id}
+    </delete>
+
+</mapper>

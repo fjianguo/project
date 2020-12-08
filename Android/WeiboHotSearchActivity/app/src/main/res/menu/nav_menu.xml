@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/line"
+            android:title="曲线图"/>
+        <item
+            android:id="@+id/scatter"
+            android:title="散点图"/>
+        <item
+            android:id="@+id/pie"
+            android:title="饼图"/>
+        <item
+            android:id="@+id/bar"
+            android:title="柱型图"/>
+    </group>
+    <item android:title="其他">
+        <menu>
+            <item
+                android:id="@+id/add"
+                android:title="增加"/>
+            <item
+                android:id="@+id/delete"
+                android:title="删除"/>
+            <item
+                android:id="@+id/update"
+                android:title="修改"/>
+            <item
+                android:id="@+id/select"
+                android:title="查询"/>
+        </menu>
+    </item>
+
+</menu>

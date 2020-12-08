@@ -9,13 +9,7 @@
     <link rel="stylesheet" type="text/css" href="http://www.w3cschool.cc/try/jeasyui/themes/icon.css">
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.min.js"></script>
     <script type="text/javascript" src="http://www.w3cschool.cc/try/jeasyui/jquery.easyui.min.js"></script>
-    <!--
-    <link rel="stylesheet" type="text/css" href="jquery-easyui-1.9.7/themes/default/easyui.css">
-    <link rel="stylesheet" type="text/css" href="jquery-easyui-1.9.7/themes/icon.css">
-    <script type="text/javascript" src="jquery-easyui-1.9.7/jquery.min.js"></script>
-    <script type="text/javascript" src="jquery-easyui-1.9.7/jquery.easyui.min.js"></script>
-    <script type="text/javascript" src="jquery-easyui-1.9.7/locale/easyui-lang-zh_CN.js"></script>
-    -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
     <style type="text/css">
 		#fm{
 			margin:0;
@@ -39,37 +33,48 @@
 	</style>
     <script type="text/javascript">
 		var url;
+		var redata;
 		function newUser(){
-			$('#dlg').dialog('open').dialog('setTitle','New User');
+			$('#dlg').dialog('open').dialog('setTitle','New');
 			$('#fm').form('clear');
-			url = 'http://localhost:8080/WeiboHotSearch/Insert';
+			url = 'http://localhost:8080/weibo/insert';
 		}
 		function editUser(){
 			var row = $('#dg').datagrid('getSelected');
 			if (row){
-				$('#dlg').dialog('open').dialog('setTitle','Edit User');
+				$('#dlg').dialog('open').dialog('setTitle','Edit');
 				$('#fm').form('load',row);
-				url = 'http://localhost:8080/WeiboHotSearch/Edit?id='+row.Id;
+				//url = 'http://localhost:8080/weibo/update?id='+row.id;
+				url = 'http://localhost:8080/weibo/update';
 			}
 		}
 		function saveUser(){
-			$('#fm').form('submit',{
+			var rank = fm.rank.value;
+			var title = fm.title.value;
+			var view = fm.view.value;
+			var row = $('#dg').datagrid('getSelected');
+			var id = row.id;
+			var data = {id:id,rank:rank,title:title,view:view};
+			$.ajax({
+				type: "post",
+				dataType: "json",
 				url: url,
-				onSubmit: function(){
-					return $(this).form('validate');
-				},
-				success: function(result){
-					var result = eval('('+result+')');
-					if (result.success){
-						$('#dlg').dialog('close');		// close the dialog
-						$('#dg').datagrid('reload');	// reload the user data
-					} else {
-						$.messager.show({
-							title: 'Error',
-							msg: result.msg
-						});
-					}
+				data: JSON.stringify(data),
+				contentType:"application/json",
+				success: function (data) {
+					$.post(url,data,function(result){
+							if (result.success){
+								$('#dg').datagrid('reload');	// reload the user data
+							} else {
+								$.messager.show({	// show error message
+									title: 'Error',
+									msg: result.msg
+								});
+							}
+						},'json');
+						
 				}
+			
 			});
 		}
 		function removeUser(){
@@ -77,7 +82,7 @@
 			if (row){
 				$.messager.confirm('Confirm','Are you sure you want to remove this user?',function(r){
 					if (r){
-						$.post('http://localhost:8080/WeiboHotSearch/Delete',{id:row.Id},function(result){
+						$.post('http://localhost:8080/weibo/delete',{id:row.id},function(result){
 							if (result.success){
 								$('#dg').datagrid('reload');	// reload the user data
 							} else {
@@ -91,16 +96,156 @@
 				});
 			}
 		}
-	</script>
+		function sortUser(){
+			$('#dg').datagrid({
+			columns : [ [ //添加列
+				{
+					field : 'rank',
+					title : 'rank',
+					align : 'center',
+					width : 100
+				},
+				{
+					field : 'title',
+					title : 'title',
+					align : 'center',
+					width : 100
+				},
+				{
+					field : 'view',
+					title : 'view',
+					align : 'center',
+					width : 100
+				},
+			] ],
+			pagination : true, //开启分页
+			url : 'http://localhost:8080/rank/weibo', //获取数据地址
+			loadFilter : pagerFilter, //调用分页函数
+		});
+	}
+	function table(){
+		var row = $('#dg').datagrid('getSelected');
+		var url = "http://localhost:8080/weibo/title";
+		
+		$('#dg').datagrid({ 
+	queryParams: {          
+        	title: row.title            
+          },
+	columns : [ [ //添加列
+		{
+			field : 'id', //绑定数据源ID
+			title : 'id', //显示列名称
+			align : 'center', //内容在列居中
+			width : 100 //列的宽度
+		},
+		{
+			field : 'rank',
+			title : 'rank',
+			align : 'center',
+			width : 100
+		},
+		{
+			field : 'title',
+			title : 'title',
+			align : 'center',
+			width : 100
+		},
+		{
+			field : 'view',
+			title : 'view',
+			align : 'center',
+			width : 100
+		},
+		{
+			field : 'Time',
+			title : 'Time',
+			align : 'center',
+			width : 100
+		},
+	] ],
+	ByName : row.Title,
+	url : 'http://localhost:8080/api/weibo',
+	pagination : true, //开启分页
+	loadFilter : pagerFilter, //调用分页函数
+});	
+		var xArr = new Array();
+		var yArr = new Array();
+		var arr = new Array();
+		$.getJSON(url,{title : row.title},function(result,status,request){
+		var mydataStr = request.responseText;
+		redata = JSON.parse(mydataStr);
+		});
+		for(n = 0 ;n < redata.length;n++){
+			yArr[n] = redata[n].view;
+		}
+		for(b = 0 ;b < redata.length;b++){
+			xArr[b] = redata[b].id;
+		}
+		for(b = 0 ;b < redata.length;b++){
+			arr[b] = redata[b].title;
+		}
+		var dom = document.getElementById("container");
+		var myChart = echarts.init(dom);
+		var app = {};
+		option = null;
+		option = {
+		title: {
+			text: '折线图堆叠'
+		},
+		tooltip: {
+			trigger: 'axis'
+		},
+		legend: {
+			data: arr
+		},
+		grid: {
+			left: '3%',
+			right: '4%',
+			bottom: '3%',
+			containLabel: true
+		},
+		toolbox: {
+			feature: {
+				saveAsImage: {}
+			}
+		},
+		xAxis: {
+			type: 'category',
+			boundaryGap: false,
+			data: xArr
+		},
+		yAxis: {
+			type: 'value'
+		},
+		series: [
+			{
+				name: '邮件营销',
+				type: 'line',
+				stack: '总量',
+				data: yArr,
+				smooth:true
+			}
+		]
+	};
+		
+		if (option && typeof option === "object") {
+    		myChart.setOption(option, true);
+		}
+		$('#container').dialog('open').dialog('setTitle','曲线图')
+	}
+</script>
 </head>
 <body>
+<div id="container" style="width:700px;height:400px;padding:5px 10px" class="easyui-dialog" closed="true"></div>
 <table id="dg" style="width:800px" title="My Users" rownumbers="true"
        data-options="fit:true" toolbar="#toolbar" fitColumns="true"
        singleSelect="true"></table>
 <div id="toolbar">
-    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">New User</a>
-    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Edit User</a>
-    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeUser()">Remove User</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">New</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Edit</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeUser()">Remove</a>
+    <a href="#" class="easyui-linkbutton" plain="true" onclick="sortUser()">Sort</a>
+    <a href="#" class="easyui-linkbutton" plain="true" onclick="table()">Table</a>
 </div>
 <div id="dlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
      closed="true" buttons="#dlg-buttons">
@@ -108,15 +253,15 @@
     <form id="fm" method="post" novalidate>
         <div class="fitem">
             <label>Search Rank:</label>
-            <input name="search_rank" class="easyui-validatebox" required>
+            <input name="rank" class="easyui-validatebox" required>
         </div>
         <div class="fitem">
             <label>Search Title:</label>
-            <input name="search_title" class="easyui-validatebox" required>
+            <input name="title" class="easyui-validatebox" required>
         </div>
         <div class="fitem">
             <label>Search View:</label>
-            <input name="search_view" class="easyui-validatebox" required>
+            <input name="view" class="easyui-validatebox" required>
         </div>
     </form>
 </div>
@@ -128,34 +273,35 @@
     $('#dg').datagrid({
 	columns : [ [ //添加列
 		{
-			field : 'Id', //绑定数据源ID
-			title : 'Id', //显示列名称
+			field : 'id', //绑定数据源ID
+			title : 'id', //显示列名称
 			align : 'center', //内容在列居中
 			width : 100 //列的宽度
 		},
 		{
-			field : 'Rank',
-			title : 'Rank',
+			field : 'rank',
+			title : 'rank',
 			align : 'center',
 			width : 100
 		},
 		{
-			field : 'Title',
-			title : 'Title',
+			field : 'title',
+			title : 'title',
 			align : 'center',
 			width : 100
 		},
 		{
-			field : 'View',
-			title : 'View',
+			field : 'view',
+			title : 'view',
 			align : 'center',
 			width : 100
 		},
 	] ],
 	pagination : true, //开启分页
-	url : 'http://localhost:8080/WeiboHotSearch/DB', //获取数据地址
+	url : 'http://localhost:8080/weibo', //获取数据地址
 	loadFilter : pagerFilter, //调用分页函数
 });
+
 function pagerFilter(data) {
 	if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
 		data = {

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="keywords" content="jquery,ui,easy,easyui,web">
+    <meta name="description" content="easyui help you build your web page easily!">
+    <title>Search</title>
+    <link rel="stylesheet" type="text/css" href="http://www.w3cschool.cc/try/jeasyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="http://www.w3cschool.cc/try/jeasyui/themes/icon.css">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.min.js"></script>
+    <script type="text/javascript" src="http://www.w3cschool.cc/try/jeasyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style type="text/css">
+		#fm{
+			margin:0;
+			padding:10px 30px;
+		}
+		.ftitle{
+			font-size:14px;
+			font-weight:bold;
+			color:#666;
+			padding:5px 0;
+			margin-bottom:10px;
+			border-bottom:1px solid #ccc;
+		}
+		.fitem{
+			margin-bottom:5px;
+		}
+		.fitem label{
+			display:inline-block;
+			width:80px;
+		}
+	</style>
+    <script type="text/javascript">
+		var url;
+		var test;
+		function newUser(){
+			$('#dlg').dialog('open').dialog('setTitle','New');
+			$('#fm').form('clear');
+			url = 'http://localhost:9191/insert';
+			test = 0;
+		}
+		function editUser(){
+			var row = $('#dg').datagrid('getSelected');
+			if (row){
+				$('#dlg').dialog('open').dialog('setTitle','Edit');
+				$('#fm').form('load',row);
+				url = 'http://localhost:9191/update';
+				test = 1;
+			}
+		}
+		function saveUser(){
+			var rank = fm.rank.value;
+			var title = fm.title.value;
+			var view = fm.view.value;
+			var row = $('#dg').datagrid('getSelected');
+			var id = row.Id;
+			var saveData;
+			if (test == 0){
+				saveData = {rank:rank,title:title,view:view};
+			}else{
+				saveData = {id:id,rank:rank,title:title,view:view};
+			}
+			$.post(url,saveData,function(result){
+				if (result.success){
+					$('#dg').datagrid('reload');	// reload the user data
+				} else {
+					$.messager.show({	// show error message
+						title: 'Error',
+						msg: result.msg
+					});
+				}
+			},'json');
+		}
+		function removeUser(){
+			var row = $('#dg').datagrid('getSelected');
+			if (row){
+				$.messager.confirm('Confirm','Are you sure you want to remove this user?',function(r){
+					if (r){
+						$.post('http://localhost:9191/delete',{id:row.Id},function(result){
+							if (result.success){
+								$('#dg').datagrid('reload');	// reload the user data
+							} else {
+								$.messager.show({	// show error message
+									title: 'Error',
+									msg: result.msg
+								});
+							}
+						},'json');
+					}
+				});
+			}
+		}
+</script>
+</head>
+<body>
+<div id="container" style="width:700px;height:400px;padding:5px 10px" class="easyui-dialog" closed="true"></div>
+<table id="dg" style="width:800px" title="My Users" rownumbers="true"
+       data-options="fit:true" toolbar="#toolbar" fitColumns="true"
+       singleSelect="true"></table>
+<div id="toolbar">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">New</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Edit</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeUser()">Remove</a>
+</div>
+<div id="dlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
+     closed="true" buttons="#dlg-buttons">
+    <div class="ftitle">User Information</div>
+    <form id="fm" method="post" novalidate>
+        <div class="fitem">
+            <label>Search Rank:</label>
+            <input name="rank" class="easyui-validatebox" required>
+        </div>
+        <div class="fitem">
+            <label>Search Title:</label>
+            <input name="title" class="easyui-validatebox" required>
+        </div>
+        <div class="fitem">
+            <label>Search View:</label>
+            <input name="view" class="easyui-validatebox" required>
+        </div>
+    </form>
+</div>
+<div id="dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveUser()">Save</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">Cancel</a>
+</div>
+<script>
+    $('#dg').datagrid({
+	columns : [ [ //添加列
+		{
+			field : 'Id', //绑定数据源ID
+			title : 'Id', //显示列名称
+			align : 'center', //内容在列居中
+			width : 100 //列的宽度
+		},
+		{
+			field : 'Rank',
+			title : 'Rank',
+			align : 'center',
+			width : 100
+		},
+		{
+			field : 'Title',
+			title : 'Title',
+			align : 'center',
+			width : 100
+		},
+		{
+			field : 'View',
+			title : 'View',
+			align : 'center',
+			width : 100
+		},
+	] ],
+	pagination : true, //开启分页
+	url : 'http://localhost:9191/search', //获取数据地址
+	loadFilter : pagerFilter, //调用分页函数
+});
+
+function pagerFilter(data) {
+	if (typeof data.length == 'number' && typeof data.splice == 'function') { // is array
+		data = {
+			total : data.length,
+			rows : data
+		}
+	}
+	var dg = $(this);
+	var opts = dg.datagrid('options');
+	var pager = dg.datagrid('getPager');
+	pager.pagination({
+		onSelectPage : function(pageNum, pageSize) {
+			opts.pageNumber = pageNum;
+			opts.pageSize = pageSize;
+			pager.pagination('refresh', {
+				pageNumber : pageNum,
+				pageSize : pageSize
+			});
+			dg.datagrid('loadData', data);
+		}
+	});
+	if (!data.originalRows) {
+		data.originalRows = (data.rows);
+	}
+	var start = (opts.pageNumber - 1) * parseInt(opts.pageSize);
+	var end = start + parseInt(opts.pageSize);
+	data.rows = (data.originalRows.slice(start, end));
+	return data;
+}
+</script>
+</body>
+</html>
